@@ -1,0 +1,25 @@
+name: CI-CD-EC2-Pipeline
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clone repo
+      - uses: actions/checkout@v2
+        
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8  
+          
+      - name: Maven Package
+        run: mvn -B clean package -DskipTests
+        
+      - name: List all files
+        run: ls -la  
