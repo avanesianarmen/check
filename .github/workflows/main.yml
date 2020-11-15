@@ -3,7 +3,7 @@ env:
  AWS_REGION_NAME: "us-east-2"
  AWS_S3_BUCKET  : "user-apps"
  JAR_PATH       : "target/*.jar"
- COMMIT_SHA     : "Hello ${GITHUB_SHA::8}"
+ COMMIT_SHA     : ${GITHUB_SHA::8}
  
 on:
   push:
@@ -21,20 +21,20 @@ jobs:
       - name: Ls
         run: echo ${{ env.COMMIT_SHA }}  
         
-     # - name: Set up JDK
-     #   uses: actions/setup-java@v1
-     #   with:
-     #     java-version: 8  
+      - name: Set up JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8  
           
-      #- name: Maven Package
-      #  run: mvn -B clean package -DskipTests
+      - name: Maven Package
+        run: mvn -B clean package -DskipTests
       
-      #- name: Configure my AWS Credentials
-      #  uses: aws-actions/configure-aws-credentials@v1
-      #  with:
-      #    aws-access-key-id    :  ${{ secrets.AWS_ACCESS_KEY }}
-      #    aws-secret-access-key:  ${{ secrets.AWS_SECRET_KEY }}
-      #    aws-region           :  ${{ env.AWS_REGION_NAME }}
+      - name: Configure my AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id    :  ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key:  ${{ secrets.AWS_SECRET_KEY }}
+          aws-region           :  ${{ env.AWS_REGION_NAME }}
           
-      #- name: Copy jar to S3
-      #  run:  aws s3 cp ${{ env.JAR_PATH }} s3://${{ env.AWS_S3_BUCKET }}/check.jar
+      - name: Copy jar to S3
+        run:  aws s3 cp ${{ env.JAR_PATH }} s3://${{ env.AWS_S3_BUCKET }}/check-${GITHUB_SHA::8}.jar
