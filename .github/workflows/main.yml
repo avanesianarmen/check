@@ -3,7 +3,6 @@ env:
  AWS_REGION_NAME: "us-east-2"
  AWS_S3_BUCKET  : "user-apps"
  JAR_PATH       : "target/*.jar"
- COMMIT_SHA     : ${GITHUB_SHA::8}
  NEW_APP_NAME   : "check-${GITHUB_SHA::8}.jar"
  
 on:
@@ -18,9 +17,6 @@ jobs:
   
       - name: Clone repo
         uses: actions/checkout@v2
-        
-      - name: Ls
-        run: echo ${{ env.COMMIT_SHA }}  
         
       - name: Set up JDK
         uses: actions/setup-java@v1
