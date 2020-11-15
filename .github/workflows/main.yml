@@ -4,6 +4,7 @@ env:
  AWS_S3_BUCKET  : "user-apps"
  JAR_PATH       : "target/*.jar"
  COMMIT_SHA     : ${GITHUB_SHA::8}
+ NEW_APP_NAME   : "check-${GITHUB_SHA::8}.jar"
  
 on:
   push:
@@ -11,10 +12,10 @@ on:
 
 jobs:
 
-  build:
+  ci:
     runs-on: ubuntu-latest
-
     steps:
+  
       - name: Clone repo
         uses: actions/checkout@v2
         
@@ -37,4 +38,25 @@ jobs:
           aws-region           :  ${{ env.AWS_REGION_NAME }}
           
       - name: Copy jar to S3
-        run:  aws s3 cp ${{ env.JAR_PATH }} s3://${{ env.AWS_S3_BUCKET }}/check-${GITHUB_SHA::8}.jar
+        run:  aws s3 cp ${{ env.JAR_PATH }} s3://${{ env.AWS_S3_BUCKET }}/${{ env.NEW_APP_NAME }}
+  cd:
+    runs-on: ubuntu-latest  
+    needs: [ci]   
+    steps:
+      
+      - name: Configure my AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id    :  ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key:  ${{ secrets.AWS_SECRET_KEY }}
+          aws-region           :  ${{ env.AWS_REGION_NAME }}
+           
+      - name: Create new ElasticBeanstalk Application Version
+        run : |
+         aws cloudformation create-stack \
+         --stack-name SpringEc2 \
+         --parameters ParameterKey=AppName,ParameterValue=${{ env.NEW_APP_NAME }} \
+         --template-url https://s3.amazonaws.com/user-apps/demo.template \
+         --capabilities CAPABILITY_IAM 
+          
+    
