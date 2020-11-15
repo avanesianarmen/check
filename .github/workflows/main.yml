@@ -3,7 +3,7 @@ env:
  AWS_REGION_NAME: "us-east-2"
  AWS_S3_BUCKET  : "user-apps"
  JAR_PATH       : "target/*.jar"
- COMMIT_SHA     : ${GITHUB_SHA::8}
+ COMMIT_SHA     : "Hello ${GITHUB_SHA::8}"
  
 on:
   push:
